@@ -9,15 +9,20 @@
 }
 
 html, body {
-    height: 100vh;
+    height: 100%;
     margin: 0;
     padding: 0;
 }
 
+/* Make the body a column flex container so footer can be pushed to the bottom
+   when page content is short. Use min-height so pages longer than the viewport
+   still scroll normally. */
 body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     font-family: 'Montserrat', sans-serif;
     background-color: #FFF7F0;
-    /* Removed flex layout and hidden overflow to allow normal page scroll */
 }
 
 /* ============================================
@@ -126,7 +131,8 @@ body {
     width: 100%;
     background-color: #FFF7F0;
     padding: 40px 20px;
-    /* Removed inner scrolling so the body scrolls instead */
+    /* Allow the main content area to grow and push the footer down */
+    flex: 1 0 auto;
 }
 
 .content-wrapper {
@@ -147,7 +153,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Removed auto top margin so footer isn't pinned at the viewport bottom */
+    /* In a column flex layout the footer will stay at the bottom when
+       the content is short. If the content grows, the footer follows the flow. */
 }
 
 .footer-container {

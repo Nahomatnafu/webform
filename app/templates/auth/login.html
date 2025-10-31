@@ -7,13 +7,14 @@
         <h1 class="form-card-title">Sign In</h1>
         <p class="form-card-subtitle">Welcome back! Sign in to your account to continue.</p>
 
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-info" role="alert">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        {# If the view was reached via a redirect protected by login_required, Flask-Login
+           will flash a message and the global flash area in `base.html` will display it.
+           When there are no flashed messages (direct visit), show a static informational
+           banner so the page matches the desired look. This avoids duplicate banners
+           when a flashed message is present. #}
+        {% if not get_flashed_messages() %}
+            <div class="alert alert-info" role="alert">Please log in to access this page.</div>
+        {% endif %}
 
         <form method="POST" novalidate>
             {{ form.hidden_tag() }}
