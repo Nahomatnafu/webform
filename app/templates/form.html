@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    /* Hide the login button on the form page */
+    .throttlex-header .header-right {
+        display: none;
+    }
+</style>
 <div class="id-form-wrapper">
     <div class="id-form-header">
         <h1 class="form-card-title">ID Information Form</h1>
@@ -23,12 +29,16 @@
             <!-- Upload Section -->
             <div class="id-form-section">
                 <label class="id-form-label">Upload <span class="required">*</span></label>
-                <div class="file-upload-wrapper"> 
+                <div class="file-upload-wrapper">
                     {{ form.image(class="file-input", accept="image/*") }}
                     <label for="{{ form.image.id }}" class="file-upload-label">
                         Choose File
                     </label>
                     <span class="file-name">No file chosen</span>
+                </div>
+                <!-- Image Preview -->
+                <div id="image-preview-container" style="display: none; margin-top: 15px;">
+                    <img id="image-preview" src="" alt="Image preview" style="max-width: 300px; max-height: 300px; border-radius: 8px; border: 2px solid #D0D0D0;">
                 </div>
                 {% if form.image.errors %}
                     {% for error in form.image.errors %}
@@ -72,7 +82,17 @@
             <div class="id-form-row">
                 <div class="id-form-field">
                     <label class="id-form-label">Height <span class="required">*</span></label>
-                    {{ form.height(class="id-form-input", placeholder="5'8\"") }}
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <div style="flex: 1;">
+                            <input type="number" id="height-feet" class="id-form-input" placeholder="5" min="0" max="8" step="1" style="text-align: center;">
+                            <small style="display: block; text-align: center; margin-top: 4px; color: #666;">feet</small>
+                        </div>
+                        <div style="flex: 1;">
+                            <input type="number" id="height-inches" class="id-form-input" placeholder="8" min="0" max="11" step="1" style="text-align: center;">
+                            <small style="display: block; text-align: center; margin-top: 4px; color: #666;">inches</small>
+                        </div>
+                    </div>
+                    {{ form.height(id="height-cm-hidden", style="display: none;") }}
                     {% if form.height.errors %}
                         {% for error in form.height.errors %}
                             <div class="form-error">{{ error }}</div>
@@ -174,10 +194,12 @@
                 </div>
             </div>
             <!-- Organ Donor and Restrictions -->
-            <div class="id-form-row">
+            <div class="id-form-row" style="grid-template-columns: 1fr 1fr;">
                 <div class="id-form-field">
-                    <label class="id-form-label">Organ Donor</label>
-                    {{ form.organ_donor() }}
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label class="id-form-label" style="margin-bottom: 0;">Organ Donor</label>
+                        {{ form.organ_donor(style="width: 20px; height: 20px; cursor: pointer;") }}
+                    </div>
                     {% if form.organ_donor.errors %}
                         {% for error in form.organ_donor.errors %}
                             <div class="form-error">{{ error }}</div>
@@ -185,8 +207,10 @@
                     {% endif %}
                 </div>
                 <div class="id-form-field">
-                    <label class="id-form-label">Restrictions (Corrective Lenses)</label>
-                    {{ form.restrictions_corrective_lenses() }}
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label class="id-form-label" style="margin-bottom: 0;">Restrictions (Corrective Lenses)</label>
+                        {{ form.restrictions_corrective_lenses(style="width: 20px; height: 20px; cursor: pointer;") }}
+                    </div>
                     {% if form.restrictions_corrective_lenses.errors %}
                         {% for error in form.restrictions_corrective_lenses.errors %}
                             <div class="form-error">{{ error }}</div>
@@ -203,16 +227,52 @@
 </div>
 
 <script>
-    // File upload label update
+    // File upload label update and image preview
     const fileInput = document.querySelector('.file-input');
     const fileName = document.querySelector('.file-name');
+    const imagePreview = document.getElementById('image-preview');
+    const imagePreviewContainer = document.getElementById('image-preview-container');
 
     if (fileInput) {
         fileInput.addEventListener('change', function() {
             if (this.files && this.files[0]) {
-                fileName.textContent = this.files[0].name;
+                const file = this.files[0];
+                fileName.textContent = file.name;
+
+                // Show image preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // Hide preview if no file selected
+                imagePreviewContainer.style.display = 'none';
+                fileName.textContent = 'No file chosen';
             }
         });
+    }
+
+    // Height conversion from feet/inches to cm
+    const heightFeet = document.getElementById('height-feet');
+    const heightInches = document.getElementById('height-inches');
+    const heightCmHidden = document.getElementById('height-cm-hidden');
+
+    function updateHeightCm() {
+        const feet = parseFloat(heightFeet.value) || 0;
+        const inches = parseFloat(heightInches.value) || 0;
+
+        // Convert to total inches, then to cm (1 inch = 2.54 cm)
+        const totalInches = (feet * 12) + inches;
+        const cm = totalInches * 2.54;
+
+        heightCmHidden.value = cm.toFixed(2);
+    }
+
+    if (heightFeet && heightInches) {
+        heightFeet.addEventListener('input', updateHeightCm);
+        heightInches.addEventListener('input', updateHeightCm);
     }
 </script>
 {% endblock %}

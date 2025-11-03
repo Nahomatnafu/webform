@@ -7,11 +7,50 @@
     </div>
 
     <!-- Image Section (Full Width) -->
-    <div class="form-card id-form-card" style="margin-bottom: 2rem;">
+    <div class="form-card id-form-card" style="margin-bottom: 2rem; position: relative;">
         <a href="{{ url_for('main.upload', filename=form.id) }}" data-toggle="lightbox" data-caption="{{ form.first_name }}">
             <img src="{{ url_for('main.upload', filename=form.id) }}" class="img-fluid" width="500px" height="500px">
         </a>
+        <!-- Download Button -->
+        <a href="{{ url_for('main.download', filename=form.id) }}" class="download-btn" title="Download Image">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+        </a>
     </div>
+
+    <style>
+        .download-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #FF7A00;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .download-btn:hover {
+            background-color: #CC6200;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 122, 0, 0.3);
+            color: white;
+        }
+
+        .download-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
 
     <!-- Single Info Card -->
     <div class="form-card id-form-card">
@@ -106,7 +145,7 @@
 
     <!-- Submit Button (Centered) -->
     <div class="id-form-submit">
-        <a href="{{ url_for('main.index') }}" class="id-form-submit-btn">Back to Home</a>
+        <a href="{{ url_for('main.index') }}" class="id-form-submit-btn" style="text-align: center;">Back to Home</a>
     </div>
 </div>
 {% endblock %}

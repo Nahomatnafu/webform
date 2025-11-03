@@ -122,3 +122,11 @@ def upload(filename):
     kind = filetype.guess(filepath)
     mimetype = kind.mime if kind else 'application/octet-stream'
     return send_from_directory(current_app.config['UPLOAD_PATH'], filename, as_attachment=False, mimetype=mimetype)
+
+@bp.route('/download/<filename>')
+@login_required
+def download(filename):
+    filepath = os.path.join(current_app.config['UPLOAD_PATH'], filename)
+    kind = filetype.guess(filepath)
+    extension = kind.extension if kind else 'jpg'
+    return send_from_directory(current_app.config['UPLOAD_PATH'], filename, as_attachment=True, download_name=f'{filename}.{extension}')

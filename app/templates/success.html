@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    /* Hide the login button on the success page */
+    .throttlex-header .header-right {
+        display: none;
+    }
+</style>
     <h1 class="display-1 text-success">Form submitted successfully!</h1>
 {% endblock %}
