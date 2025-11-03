@@ -6,3 +6,7 @@ venv
 uploads
 app.db
 webform.log*
+
+# Sensitive scripts with credentials
+add_users.py
+test_login.py
