@@ -71,14 +71,19 @@ def user():
 @bp.route('/form/<link_id>', methods=['GET', 'POST'])
 def form(link_id):
     link = db.first_or_404(
-        sa.select(Link).where(Link.id == link_id).where(Link.used == False)
+        sa.select(Link).where(Link.id == link_id)
     )
     if link.is_active() == False:
         abort(404)
-    
+
     form = IDForm(allowed=current_app.config['UPLOAD_EXTENSIONS'])
     if form.validate_on_submit():
-        f = Form(id=link.id,
+        # Generate unique ID for this form submission
+        form_id = secrets.token_urlsafe(16)
+
+        f = Form(
+            id=form_id,
+            link_id=link.id,
             first_name=form.first_name.data,
             middle_name=form.middle_name.data,
             last_name=form.last_name.data,
@@ -92,15 +97,15 @@ def form(link_id):
             state=form.state.data,
             city=form.city.data,
             zip_code=form.zip_code.data,
-            organ_donor= form.organ_donor.data,
+            organ_donor=form.organ_donor.data,
             restrictions_corrective_lenses=form.restrictions_corrective_lenses.data,
             group_id=link.group_id
         )
         if form.middle_name.data:
             f.middle_name = form.middle_name.data
 
-        form.image.data.save(os.path.join(current_app.config['UPLOAD_PATH'], link.id))
-        link.used = True
+        # Save image with form ID instead of link ID
+        form.image.data.save(os.path.join(current_app.config['UPLOAD_PATH'], form_id))
 
         # Increment group count if this link belongs to a group
         if link.group:

@@ -97,7 +97,8 @@ class Link(db.Model):
         return (not self.used) and (self.end_at.replace(tzinfo=timezone.utc) > now)
 
 class Form(db.Model):
-    id: so.Mapped[str] = so.mapped_column(sa.String(22), primary_key=True)
+    id: so.Mapped[str] = so.mapped_column(sa.String(22), primary_key=True, default=lambda: secrets.token_urlsafe(16))
+    link_id: so.Mapped[str] = so.mapped_column(sa.String(22), sa.ForeignKey(Link.id), index=True)
     first_name: so.Mapped[str] = so.mapped_column(sa.String(50))
     middle_name: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50))
     last_name: so.Mapped[str] = so.mapped_column(sa.String(50))
@@ -118,6 +119,7 @@ class Form(db.Model):
     )
     submitted_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime(timezone=True), index=True, default=lambda: datetime.now(timezone.utc))
 
+    link: so.Mapped[Link] = so.relationship(foreign_keys=[link_id])
     group: so.Mapped[Optional[Group]] = so.relationship(back_populates='forms')
 
     def __repr__(self):
