@@ -18,6 +18,38 @@
     .export-btn:hover {
         background-color: #e68a00;
     }
+
+    .table-row-hover {
+        position: relative;
+    }
+
+    .delete-btn {
+        display: none;
+        padding: 4px 12px;
+        background-color: #dc3545;
+        color: white;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+        cursor: pointer;
+        border: none;
+    }
+
+    .delete-btn:hover {
+        background-color: #c82333;
+    }
+
+    .table-row-hover:hover .delete-btn {
+        display: inline-block;
+    }
+
+    .status-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 </style>
 <div class="dashboard-container">
     <!-- Group Header -->
@@ -88,7 +120,7 @@
             </thead>
             <tbody>
                 {% for link in links %}
-                <tr>
+                <tr class="table-row-hover">
                     <td>
                         <a href="{{ url_for('main.form', link_id=link.id, _external=True) }}" class="table-link" data-url="{{ url_for('main.form', link_id=link.id, _external=True) }}" onclick="copyToClipboard(event, this)">
                             ink.sh/{{ link.id[:6] }}
@@ -97,13 +129,18 @@
                     <td>{{ moment(link.created_at).format('MMM DD, YYYY h:mm A') }}</td>
                     <td>{{ moment(link.end_at).format('MMM DD, YYYY h:mm A') }}</td>
                     <td>
-                        {% if link.used %}
-                            <span class="status-badge status-filled">Filled</span>
-                        {% elif link.is_active() %}
-                            <span class="status-badge status-active">Active</span>
-                        {% else %}
-                            <span class="status-badge status-expired">Expired</span>
-                        {% endif %}
+                        <div class="status-cell">
+                            {% if link.used %}
+                                <span class="status-badge status-filled">Filled</span>
+                            {% elif link.is_active() %}
+                                <span class="status-badge status-active">Active</span>
+                            {% else %}
+                                <span class="status-badge status-expired">Expired</span>
+                            {% endif %}
+                            <form method="POST" action="{{ url_for('main.delete_group_link', group_id=group.id, link_id=link.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this link?');">
+                                <button type="submit" class="delete-btn">Delete</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
@@ -159,12 +196,17 @@
             </thead>
             <tbody>
                 {% for form_data in all_forms %}
-                <tr>
+                <tr class="table-row-hover">
                     <td>{{ form_data.first_name }}</td>
                     <td>{{ form_data.last_name }}</td>
                     <td>{{ moment(form_data.submitted_at).format('MMM DD, YYYY h:mm A') }}</td>
                     <td>
-                        <a href="{{ url_for('main.view_form', form_id=form_data.id) }}" class="btn-view-form">View Form</a>
+                        <div class="status-cell">
+                            <a href="{{ url_for('main.view_form', form_id=form_data.id) }}" class="btn-view-form">View Form</a>
+                            <form method="POST" action="{{ url_for('main.delete_form', form_id=form_data.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this submission?');">
+                                <button type="submit" class="delete-btn">Delete</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}

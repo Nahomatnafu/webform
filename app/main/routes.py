@@ -321,3 +321,95 @@ def export_group_photos(group_id):
         as_attachment=True,
         download_name=filename
     )
+
+@bp.route('/link/<link_id>/delete', methods=['POST'])
+@login_required
+def delete_link(link_id):
+    """Delete a dashboard link and its associated form"""
+    link = db.first_or_404(
+        sa.select(Link).where(Link.id == link_id).where(Link.user_id == current_user.id)
+    )
+
+    # Delete associated form if it exists
+    form = db.session.scalars(sa.select(Form).where(Form.link_id == link_id)).first()
+    if form:
+        # Delete the image file
+        image_path = os.path.join(current_app.config['UPLOAD_PATH'], form.id)
+        if os.path.exists(image_path):
+            os.remove(image_path)
+        db.session.delete(form)
+
+    # Delete the link
+    db.session.delete(link)
+    db.session.commit()
+    flash('Link deleted successfully!')
+    return redirect(url_for('main.index'))
+
+@bp.route('/group/<int:group_id>/link/<link_id>/delete', methods=['POST'])
+@login_required
+def delete_group_link(group_id, link_id):
+    """Delete a group link"""
+    group = db.first_or_404(
+        sa.select(Group).where(Group.id == group_id).where(Group.user_id == current_user.id)
+    )
+
+    link = db.first_or_404(
+        sa.select(Link).where(Link.id == link_id).where(Link.group_id == group_id)
+    )
+
+    # Delete associated forms if they exist
+    forms = db.session.scalars(sa.select(Form).where(Form.link_id == link_id)).all()
+    for form in forms:
+        # Delete the image file
+        image_path = os.path.join(current_app.config['UPLOAD_PATH'], form.id)
+        if os.path.exists(image_path):
+            os.remove(image_path)
+        # Decrement group count
+        if group.current_count > 0:
+            group.current_count -= 1
+        db.session.delete(form)
+
+    # Delete the link
+    db.session.delete(link)
+    db.session.commit()
+    flash('Link deleted successfully!')
+    return redirect(url_for('main.view_group', group_id=group_id))
+
+@bp.route('/form/<form_id>/delete', methods=['POST'])
+@login_required
+def delete_form(form_id):
+    """Delete a form submission"""
+    form = db.first_or_404(
+        sa.select(Form).where(Form.id == form_id)
+    )
+
+    # Verify user owns the group or link
+    if form.group:
+        group = db.first_or_404(
+            sa.select(Group).where(Group.id == form.group_id).where(Group.user_id == current_user.id)
+        )
+        group_id = group.id
+    else:
+        link = db.first_or_404(
+            sa.select(Link).where(Link.id == form.link_id).where(Link.user_id == current_user.id)
+        )
+        group_id = None
+
+    # Delete the image file
+    image_path = os.path.join(current_app.config['UPLOAD_PATH'], form.id)
+    if os.path.exists(image_path):
+        os.remove(image_path)
+
+    # Decrement group count if it's a group form
+    if form.group:
+        if form.group.current_count > 0:
+            form.group.current_count -= 1
+
+    db.session.delete(form)
+    db.session.commit()
+    flash('Submission deleted successfully!')
+
+    if group_id:
+        return redirect(url_for('main.view_group', group_id=group_id))
+    else:
+        return redirect(url_for('main.index'))
