@@ -27,6 +27,12 @@
                     <img src="{{ url_for('static', filename='images/IDPlug_logo.png') }}" alt="IDPlug Logo" class="logo">
                 </a>
             </div>
+            <div class="header-center" style="display: flex; gap: 30px; align-items: center;">
+                {% if not current_user.is_anonymous %}
+                    <a href="{{ url_for('main.index') }}" style="text-decoration: none; color: #333; font-weight: 500;">Dashboard</a>
+                    <a href="{{ url_for('main.groups') }}" style="text-decoration: none; color: #333; font-weight: 500;">Groups</a>
+                {% endif %}
+            </div>
             <div class="header-right">
                 {% if current_user.is_anonymous %}
                     <a href="{{ url_for('auth.login') }}" class="btn-signup">Login</a>

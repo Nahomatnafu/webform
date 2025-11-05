@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Group Header -->
+    <div class="dashboard-section">
+        <h2 class="section-title">{{ group.name }}</h2>
+        {% if group.description %}
+            <p class="section-subtitle">{{ group.description }}</p>
+        {% endif %}
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div style="background: #f5f5f5; padding: 20px; border-radius: 8px;">
+                <div style="font-size: 12px; color: #999; margin-bottom: 5px;">CAPACITY</div>
+                <div style="font-size: 24px; font-weight: bold;">
+                    {% if group.max_capacity == 0 %}
+                        ∞
+                    {% else %}
+                        {{ group.current_count }}/{{ group.max_capacity }}
+                    {% endif %}
+                </div>
+            </div>
+            <div style="background: #f5f5f5; padding: 20px; border-radius: 8px;">
+                <div style="font-size: 12px; color: #999; margin-bottom: 5px;">SUBMISSIONS</div>
+                <div style="font-size: 24px; font-weight: bold;">{{ group.current_count }}</div>
+            </div>
+            <div style="background: #f5f5f5; padding: 20px; border-radius: 8px;">
+                <div style="font-size: 12px; color: #999; margin-bottom: 5px;">EXPIRATION</div>
+                <div style="font-size: 14px; font-weight: bold;">
+                    {% if group.expiration_type == 'never' %}
+                        Never
+                    {% else %}
+                        {{ group.expiration_hours }}h
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generate Link Section -->
+    <div class="dashboard-section">
+        <h2 class="section-title">Generate New Link</h2>
+        
+        {% if group.is_full() %}
+            <div style="background: #fee; padding: 15px; border-radius: 8px; color: #c33; margin-bottom: 20px;">
+                <strong>⚠️ Group is Full</strong> - This group has reached its capacity limit. No new links can be generated.
+            </div>
+        {% else %}
+            <form method="POST" novalidate>
+                {{ form.hidden_tag() }}
+                <p style="color: #666; margin-bottom: 20px;">Links will automatically expire based on the group's expiration settings.</p>
+                {{ form.submit(class="btn-generate-link", value="Generate Link") }}
+            </form>
+        {% endif %}
+    </div>
+
+    <!-- Links Section -->
+    <div class="dashboard-section">
+        <h2 class="section-title">Links Generated</h2>
+
+        {% if links %}
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Link</th>
+                    <th>Created At</th>
+                    <th>Expires At</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for link in links %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('main.form', link_id=link.id, _external=True) }}" class="table-link" data-url="{{ url_for('main.form', link_id=link.id, _external=True) }}" onclick="copyToClipboard(event, this)">
+                            ink.sh/{{ link.id[:6] }}
+                        </a>
+                    </td>
+                    <td>{{ moment(link.created_at).format('MMM DD, YYYY h:mm A') }}</td>
+                    <td>{{ moment(link.end_at).format('MMM DD, YYYY h:mm A') }}</td>
+                    <td>
+                        {% if link.used %}
+                            <span class="status-badge status-filled">Filled</span>
+                        {% elif link.is_active() %}
+                            <span class="status-badge status-active">Active</span>
+                        {% else %}
+                            <span class="status-badge status-expired">Expired</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        {% if prev_url or next_url %}
+        <div class="pagination-container">
+            {% if prev_url %}
+                <a href="{{ prev_url }}" class="pagination-btn">← Back</a>
+            {% else %}
+                <button class="pagination-btn" disabled>← Back</button>
+            {% endif %}
+
+            {% if next_url %}
+                <a href="{{ next_url }}" class="pagination-btn">Next →</a>
+            {% else %}
+                <button class="pagination-btn" disabled>Next →</button>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% else %}
+        <p style="text-align: center; color: #999; padding: 40px 0;">No links generated yet. Create one above!</p>
+        {% endif %}
+    </div>
+
+    <!-- Submissions Section -->
+    <div class="dashboard-section">
+        <h2 class="section-title">Submissions</h2>
+
+        {% set filled_links = links|selectattr('used')|list %}
+        {% if filled_links %}
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Link</th>
+                    <th>Submitted</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for link in filled_links %}
+                {% set form_data = get_form(link.id) %}
+                <tr>
+                    <td>{{ form_data.first_name if form_data else '-' }}</td>
+                    <td>{{ form_data.last_name if form_data else '-' }}</td>
+                    <td>
+                        <a href="{{ url_for('main.form', link_id=link.id, _external=True) }}" class="table-link">
+                            ink.sh/{{ link.id[:6] }}
+                        </a>
+                    </td>
+                    <td>{{ moment(form_data.submitted_at).format('MMM DD, YYYY h:mm A') if form_data else '-' }}</td>
+                    <td>
+                        {% if form_data %}
+                            <a href="{{ url_for('main.view_form', form_id=link.id) }}" class="btn-view-form">View Form</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="text-align: center; color: #999; padding: 40px 0;">No submissions yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function copyToClipboard(event, element) {
+        event.preventDefault();
+        const url = element.getAttribute('data-url');
+        navigator.clipboard.writeText(url).then(function() {
+            const originalText = element.textContent;
+            element.textContent = 'Copied!';
+            setTimeout(function() {
+                element.textContent = originalText;
+            }, 1500);
+        });
+    }
+</script>
+{% endblock %}
+
