@@ -258,8 +258,7 @@ def export_group(group_id):
     excel_file = create_group_export(group, forms)
 
     # Generate filename
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    filename = f"{group.name.replace(' ', '_')}_submissions_{timestamp}.xlsx"
+    filename = f"{group.name.replace(' ', '_')}_submissions.xlsx"
 
     return send_file(
         excel_file,
@@ -310,8 +309,7 @@ def export_group_photos(group_id):
     zip_buffer.seek(0)
 
     # Generate filename
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    filename = f"{group.name.replace(' ', '_')}_photos_{timestamp}.zip"
+    filename = f"{group.name.replace(' ', '_')}_photos.zip"
 
     return send_file(
         zip_buffer,
