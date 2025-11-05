@@ -21,11 +21,7 @@ class GroupForm(FlaskForm):
     submit = SubmitField("Create Group")
 
 class InviteForm(FlaskForm):
-    weeks = IntegerField("Weeks", default=0, validators=[NumberRange(min=0)])
-    days = IntegerField("Days", default=0, validators=[NumberRange(min=0)])
-    hours = IntegerField("Hours", default=0, validators=[NumberRange(min=0)])
-    minutes = IntegerField("Minutes", default=0, validators=[NumberRange(min=0)])
-    seconds = IntegerField("Seconds", default=0, validators=[InputRequired(), NumberRange(min=0)])
+    """Form for generating group links - no input fields needed as expiration is set at group level"""
     submit = SubmitField("Generate Link")
 
 
