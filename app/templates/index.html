@@ -10,47 +10,7 @@
         <form method="POST" novalidate>
             {{ form.hidden_tag() }}
 
-            <div class="form-section">
-                <div class="form-field">
-                    <label class="form-field-label">{{ form.weeks.label.text }}</label>
-                    {{ form.weeks(class="form-field-input", placeholder="0", value=form.weeks.data or 0) }}
-                    {% if form.weeks.errors %}
-                        {% for error in form.weeks.errors %}
-                            <div class="form-error">{{ error }}</div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-                <div class="form-field">
-                    <label class="form-field-label">{{ form.days.label.text }}</label>
-                    {{ form.days(class="form-field-input", placeholder="0", value=form.days.data or 0) }}
-                    {% if form.days.errors %}
-                        {% for error in form.days.errors %}
-                            <div class="form-error">{{ error }}</div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-                <div class="form-field">
-                    <label class="form-field-label">{{ form.hours.label.text }}</label>
-                    {{ form.hours(class="form-field-input", placeholder="0", value=form.hours.data or 0) }}
-                    {% if form.hours.errors %}
-                        {% for error in form.hours.errors %}
-                            <div class="form-error">{{ error }}</div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-                <div class="form-field">
-                    <label class="form-field-label">{{ form.minutes.label.text }}</label>
-                    {{ form.minutes(class="form-field-input", placeholder="0", value=form.minutes.data or 0) }}
-                    {% if form.minutes.errors %}
-                        {% for error in form.minutes.errors %}
-                            <div class="form-error">{{ error }}</div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Hidden seconds field (required by form validation) -->
-            {{ form.seconds(value=0, style="display: none;") }}
+            <p style="color: #666; margin-bottom: 20px;">Links will automatically expire based on the group's expiration settings.</p>
 
             {% if form.submit.errors %}
                 {% for error in form.submit.errors %}
@@ -58,7 +18,7 @@
                 {% endfor %}
             {% endif %}
 
-            {{ form.submit(class="btn-generate-link") }}
+            {{ form.submit(class="btn-generate-link", value="Generate Link") }}
         </form>
     </div>
 

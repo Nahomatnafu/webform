@@ -21,19 +21,14 @@ def before_request():
 @bp.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
+    """Dashboard showing user's groups and legacy links"""
     form = InviteForm()
     if form.validate_on_submit():
+        # Legacy link generation (no group) - expires in 7 days
         now = datetime.now(timezone.utc)
-        delta = timedelta(
-            weeks=form.weeks.data,
-            days=form.days.data,
-            hours=form.hours.data,
-            minutes=form.minutes.data,
-            seconds=form.seconds.data
-        )
         link = Link(
             created_at=now,
-            end_at=now + delta,
+            end_at=now + timedelta(days=7),
             creator=current_user
         )
         db.session.add(link)
@@ -50,7 +45,9 @@ def index():
         if links.has_prev else None
 
     def get_form(link_id):
-        return db.session.get(Form, link_id)
+        # Get the first form for this link (for legacy links)
+        query = sa.select(Form).where(Form.link_id == link_id).limit(1)
+        return db.session.scalars(query).first()
 
     return render_template('index.html', title='Home', links=links.items, form=form, next_url=next_url, prev_url=prev_url, get_form=get_form)
 
