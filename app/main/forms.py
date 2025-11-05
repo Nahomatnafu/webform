@@ -1,9 +1,24 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
-from wtforms import StringField, IntegerField, SubmitField, DateField, DecimalField, SelectField, BooleanField
+from wtforms import StringField, IntegerField, SubmitField, DateField, DecimalField, SelectField, BooleanField, TextAreaField
 from wtforms.validators import ValidationError, DataRequired, InputRequired, NumberRange, Length, Optional
 from flask import current_app
 import filetype
+
+class GroupForm(FlaskForm):
+    name = StringField("Group Name", validators=[DataRequired(), Length(min=1, max=120)])
+    description = TextAreaField("Description", validators=[Optional(), Length(max=500)])
+    max_capacity = IntegerField("Max Capacity (0 for unlimited)", default=0, validators=[NumberRange(min=0)])
+    expiration_type = SelectField(
+        "Link Expiration",
+        choices=[
+            ("never", "Never Expire"),
+            ("hours", "Expire After Hours")
+        ],
+        validators=[DataRequired()]
+    )
+    expiration_hours = IntegerField("Hours Until Expiration", default=48, validators=[Optional(), NumberRange(min=1)])
+    submit = SubmitField("Create Group")
 
 class InviteForm(FlaskForm):
     weeks = IntegerField("Weeks", default=0, validators=[NumberRange(min=0)])
