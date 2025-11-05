@@ -17,6 +17,26 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/id-form.css') }}">
+    <style>
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #ff9500;
+            background-color: rgba(255, 149, 0, 0.1);
+        }
+
+        .nav-link.active {
+            color: white;
+            background-color: #ff9500;
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -27,10 +47,10 @@
                     <img src="{{ url_for('static', filename='images/IDPlug_logo.png') }}" alt="IDPlug Logo" class="logo">
                 </a>
             </div>
-            <div class="header-center" style="display: flex; gap: 30px; align-items: center;">
+            <div class="header-center" style="display: flex; gap: 10px; align-items: center;">
                 {% if not current_user.is_anonymous %}
-                    <a href="{{ url_for('main.index') }}" style="text-decoration: none; color: #333; font-weight: 500;">Dashboard</a>
-                    <a href="{{ url_for('main.groups') }}" style="text-decoration: none; color: #333; font-weight: 500;">Groups</a>
+                    <a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}">Dashboard</a>
+                    <a href="{{ url_for('main.groups') }}" class="nav-link {% if request.endpoint == 'main.groups' %}active{% endif %}">Groups</a>
                 {% endif %}
             </div>
             <div class="header-right">

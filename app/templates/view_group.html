@@ -1,6 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    .export-btn {
+        padding: 8px 16px;
+        background-color: #ff9500;
+        color: white;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .export-btn:hover {
+        background-color: #e68a00;
+    }
+</style>
 <div class="dashboard-container">
     <!-- Group Header -->
     <div class="dashboard-section">
@@ -119,11 +137,11 @@
             <h2 class="section-title" style="margin: 0;">Submissions</h2>
             {% if all_forms %}
                 <div style="display: flex; gap: 10px;">
-                    <a href="{{ url_for('main.export_group', group_id=group.id) }}" class="btn-generate-link" style="margin: 0; white-space: nowrap;">
-                        📥 Export to Excel
+                    <a href="{{ url_for('main.export_group', group_id=group.id) }}" class="export-btn">
+                        Export Excel
                     </a>
-                    <a href="{{ url_for('main.export_group_photos', group_id=group.id) }}" class="btn-generate-link" style="margin: 0; white-space: nowrap;">
-                        📸 Export Photos
+                    <a href="{{ url_for('main.export_group_photos', group_id=group.id) }}" class="export-btn">
+                        Export Photos
                     </a>
                 </div>
             {% endif %}
