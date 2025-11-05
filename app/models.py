@@ -13,6 +13,7 @@ class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     email: so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
+    remember_token: so.Mapped[Optional[str]] = so.mapped_column(sa.String(100), index=True)
     last_seen: so.Mapped[Optional[datetime]] = so.mapped_column(
         default=lambda: datetime.now(timezone.utc))
     links: so.WriteOnlyMapped['Link'] = so.relationship(
@@ -24,13 +25,23 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.email)
-    
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
-    
+
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
+
+    def get_remember_token(self):
+        """Generate a remember token for persistent login"""
+        if not self.remember_token:
+            self.remember_token = secrets.token_urlsafe(32)
+        return self.remember_token
+
+    def verify_remember_token(self, token):
+        """Verify a remember token"""
+        return self.remember_token == token
+
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
