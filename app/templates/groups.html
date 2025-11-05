@@ -2,7 +2,8 @@
 
 {% block content %}
 <style>
-    .form-field-input {
+    input.form-field-input,
+    select.form-field-input {
         height: 44px;
         box-sizing: border-box;
     }
@@ -14,6 +15,7 @@
         height: auto;
         padding: 12px 14px;
         line-height: 1.4;
+        box-sizing: border-box;
     }
 
     select.form-field-input {
@@ -23,10 +25,6 @@
         background-position: right 12px center;
         background-size: 20px;
         padding-right: 40px;
-    }
-
-    textarea.form-field-input::placeholder {
-        text-align: center;
     }
 </style>
 <div class="dashboard-container">
