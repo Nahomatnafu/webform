@@ -105,6 +105,10 @@ def form(link_id):
         # Save image with form ID instead of link ID
         form.image.data.save(os.path.join(current_app.config['UPLOAD_PATH'], form_id))
 
+        # Mark link as used if it's a non-group link (dashboard link)
+        if not link.group:
+            link.used = True
+
         # Increment group count if this link belongs to a group
         if link.group:
             link.group.current_count += 1
