@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, abort, current_app
+from flask import render_template, flash, redirect, url_for, request, abort, current_app, send_file
 from flask import send_from_directory
 from app import db
 from app.main.forms import InviteForm, IDForm, GroupForm
@@ -9,6 +9,7 @@ from datetime import datetime, timezone, timedelta
 import os
 import filetype
 from app.main import bp
+from app.export_utils import create_group_export, get_image_filename
 
 @bp.before_request
 def before_request():
@@ -218,3 +219,33 @@ def view_group(group_id):
 
     return render_template('view_group.html', title=group.name, group=group, form=form,
                          links=links.items, next_url=next_url, prev_url=prev_url, get_form=get_form)
+
+@bp.route('/group/<int:group_id>/export')
+@login_required
+def export_group(group_id):
+    """Export group submissions to Excel"""
+    group = db.first_or_404(
+        sa.select(Group).where(Group.id == group_id).where(Group.user_id == current_user.id)
+    )
+
+    # Get all forms for this group
+    query = sa.select(Form).where(Form.group_id == group_id).order_by(Form.submitted_at.desc())
+    forms = db.session.scalars(query).all()
+
+    if not forms:
+        flash('No submissions to export for this group.', 'warning')
+        return redirect(url_for('main.view_group', group_id=group_id))
+
+    # Create Excel file
+    excel_file = create_group_export(group, forms)
+
+    # Generate filename
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f"{group.name.replace(' ', '_')}_submissions_{timestamp}.xlsx"
+
+    return send_file(
+        excel_file,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name=filename
+    )

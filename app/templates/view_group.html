@@ -115,7 +115,14 @@
 
     <!-- Submissions Section -->
     <div class="dashboard-section">
-        <h2 class="section-title">Submissions</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 class="section-title" style="margin: 0;">Submissions</h2>
+            {% if filled_links %}
+                <a href="{{ url_for('main.export_group', group_id=group.id) }}" class="btn-generate-link" style="margin: 0;">
+                    📥 Export to Excel
+                </a>
+            {% endif %}
+        </div>
 
         {% set filled_links = links|selectattr('used')|list %}
         {% if filled_links %}
