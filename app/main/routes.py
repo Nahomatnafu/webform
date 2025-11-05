@@ -137,7 +137,16 @@ def download(filename):
     filepath = os.path.join(current_app.config['UPLOAD_PATH'], filename)
     kind = filetype.guess(filepath)
     extension = kind.extension if kind else 'jpg'
-    return send_from_directory(current_app.config['UPLOAD_PATH'], filename, as_attachment=True, download_name=f'{filename}.{extension}')
+
+    # Try to get the form to generate a better filename
+    form = db.session.get(Form, filename)
+    if form:
+        # Use FirstName_LastName_id format
+        download_name = f"{form.first_name}_{form.last_name}_{form.id}.{extension}"
+    else:
+        download_name = f'{filename}.{extension}'
+
+    return send_from_directory(current_app.config['UPLOAD_PATH'], filename, as_attachment=True, download_name=download_name)
 
 @bp.route('/groups', methods=['GET', 'POST'])
 @login_required
