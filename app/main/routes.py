@@ -8,6 +8,7 @@ from app.models import Link, Form, Group
 from datetime import datetime, timezone, timedelta
 import os
 import filetype
+import secrets
 from app.main import bp
 from app.export_utils import create_group_export, get_image_filename
 
