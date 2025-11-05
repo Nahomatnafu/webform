@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    textarea.form-field-input {
+        resize: none;
+        overflow: hidden;
+        min-height: 40px;
+    }
+</style>
 <div class="dashboard-container">
     <!-- Create Group Section -->
     <div class="dashboard-section">
@@ -23,7 +30,7 @@
 
                 <div class="form-field">
                     <label class="form-field-label">{{ form.description.label.text }}</label>
-                    {{ form.description(class="form-field-input", placeholder="Optional description", rows="3") }}
+                    {{ form.description(class="form-field-input", placeholder="Optional description") }}
                     {% if form.description.errors %}
                         {% for error in form.description.errors %}
                             <div class="form-error">{{ error }}</div>
@@ -136,5 +143,22 @@
         {% endif %}
     </div>
 </div>
+
+<script>
+    // Auto-expand textarea as user types
+    const textarea = document.querySelector('textarea.form-field-input');
+    if (textarea) {
+        function autoExpand() {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.max(textarea.scrollHeight, 40) + 'px';
+        }
+
+        textarea.addEventListener('input', autoExpand);
+        textarea.addEventListener('change', autoExpand);
+
+        // Initial expansion if there's already content
+        autoExpand();
+    }
+</script>
 {% endblock %}
 
