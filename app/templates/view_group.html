@@ -115,12 +115,17 @@
 
     <!-- Submissions Section -->
     <div class="dashboard-section">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px;">
             <h2 class="section-title" style="margin: 0;">Submissions</h2>
             {% if all_forms %}
-                <a href="{{ url_for('main.export_group', group_id=group.id) }}" class="btn-generate-link" style="margin: 0;">
-                    📥 Export to Excel
-                </a>
+                <div style="display: flex; gap: 10px;">
+                    <a href="{{ url_for('main.export_group', group_id=group.id) }}" class="btn-generate-link" style="margin: 0; white-space: nowrap;">
+                        📥 Export to Excel
+                    </a>
+                    <a href="{{ url_for('main.export_group_photos', group_id=group.id) }}" class="btn-generate-link" style="margin: 0; white-space: nowrap;">
+                        📸 Export Photos
+                    </a>
+                </div>
             {% endif %}
         </div>
 

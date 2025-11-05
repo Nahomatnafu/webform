@@ -266,3 +266,55 @@ def export_group(group_id):
         as_attachment=True,
         download_name=filename
     )
+
+@bp.route('/group/<int:group_id>/export-photos')
+@login_required
+def export_group_photos(group_id):
+    """Export all group submission photos as a ZIP file"""
+    import zipfile
+    import io
+
+    group = db.first_or_404(
+        sa.select(Group).where(Group.id == group_id).where(Group.user_id == current_user.id)
+    )
+
+    # Get all forms for this group
+    query = sa.select(Form).where(Form.group_id == group_id).order_by(Form.submitted_at.desc())
+    forms = db.session.scalars(query).all()
+
+    if not forms:
+        flash('No submissions to export for this group.', 'warning')
+        return redirect(url_for('main.view_group', group_id=group_id))
+
+    # Create ZIP file in memory
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for form in forms:
+            # Get image filename
+            image_path = os.path.join(current_app.config['UPLOAD_PATH'], form.id)
+
+            if os.path.exists(image_path):
+                # Create filename as FirstName_LastName_id
+                filename = f"{form.first_name}_{form.last_name}_{form.id}"
+
+                # Get file extension
+                kind = filetype.guess(image_path)
+                if kind:
+                    filename += f".{kind.extension}"
+
+                # Add file to ZIP
+                with open(image_path, 'rb') as f:
+                    zip_file.writestr(filename, f.read())
+
+    zip_buffer.seek(0)
+
+    # Generate filename
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f"{group.name.replace(' ', '_')}_photos_{timestamp}.zip"
+
+    return send_file(
+        zip_buffer,
+        mimetype='application/zip',
+        as_attachment=True,
+        download_name=filename
+    )
