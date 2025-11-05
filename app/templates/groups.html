@@ -2,13 +2,31 @@
 
 {% block content %}
 <style>
+    .form-field-input {
+        height: 44px;
+        box-sizing: border-box;
+    }
+
     textarea.form-field-input {
         resize: none;
         overflow: hidden;
-        height: 38px;
+        min-height: 44px;
+        height: auto;
         padding: 12px 14px;
-        line-height: 1;
-        box-sizing: border-box;
+        line-height: 1.4;
+    }
+
+    select.form-field-input {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 20px;
+        padding-right: 40px;
+    }
+
+    textarea.form-field-input::placeholder {
+        text-align: center;
     }
 </style>
 <div class="dashboard-container">
@@ -153,7 +171,7 @@
     if (textarea) {
         function autoExpand() {
             textarea.style.height = 'auto';
-            textarea.style.height = Math.max(textarea.scrollHeight, 40) + 'px';
+            textarea.style.height = Math.max(textarea.scrollHeight, 44) + 'px';
         }
 
         textarea.addEventListener('input', autoExpand);
