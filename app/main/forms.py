@@ -52,7 +52,7 @@ class IDForm(FlaskForm):
         ],
         validators=[DataRequired()]
     )
-    address = StringField("Address", render_kw={'disabled': True}, validators=[Length(max=200)])
+    address = StringField("Address", validators=[Optional(), Length(max=200)])
     date_of_birth = DateField("Date of Birth", format='%Y-%m-%d', validators=[DataRequired()])
     height = DecimalField("Height (in cm)", validators=[DataRequired(), NumberRange(min=0)])
     weight = DecimalField("Weight (in kg)", validators=[DataRequired(), NumberRange(min=0)])

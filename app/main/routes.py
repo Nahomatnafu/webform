@@ -83,6 +83,7 @@ def form(link_id):
             last_name=form.last_name.data,
             eye_color=form.eye_color.data,
             hair_color=form.hair_color.data,
+            address=form.address.data,
             date_of_birth=form.date_of_birth.data,
             height=form.height.data,
             weight=form.weight.data,
