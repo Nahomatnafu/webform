@@ -4,18 +4,22 @@
 <style>
     input.form-field-input,
     select.form-field-input {
-        height: 44px;
+        height: 44px !important;
         box-sizing: border-box;
     }
 
     textarea.form-field-input {
-        resize: none;
-        overflow: hidden;
-        min-height: 44px;
-        height: auto;
-        padding: 12px 14px;
-        line-height: 1.4;
-        box-sizing: border-box;
+        resize: none !important;
+        overflow: hidden !important;
+        min-height: 44px !important;
+        height: 44px !important;
+        padding: 12px 14px !important;
+        line-height: 1.4 !important;
+        box-sizing: border-box !important;
+    }
+
+    textarea.form-field-input:focus {
+        height: auto !important;
     }
 
     select.form-field-input {
@@ -168,12 +172,13 @@
     const textarea = document.querySelector('textarea.form-field-input');
     if (textarea) {
         function autoExpand() {
-            textarea.style.height = 'auto';
+            textarea.style.height = '44px';
             textarea.style.height = Math.max(textarea.scrollHeight, 44) + 'px';
         }
 
         textarea.addEventListener('input', autoExpand);
         textarea.addEventListener('change', autoExpand);
+        textarea.addEventListener('focus', autoExpand);
 
         // Initial expansion if there's already content
         autoExpand();
