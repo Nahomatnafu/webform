@@ -226,10 +226,16 @@ def view_group(group_id):
         if links.has_prev else None
 
     def get_form(link_id):
-        return db.session.get(Form, link_id)
+        # Get the first form for this link
+        query = sa.select(Form).where(Form.link_id == link_id).limit(1)
+        return db.session.scalars(query).first()
+
+    # Get all forms for this group for the submissions section
+    forms_query = sa.select(Form).where(Form.group_id == group_id).order_by(Form.submitted_at.desc())
+    all_forms = db.session.scalars(forms_query).all()
 
     return render_template('view_group.html', title=group.name, group=group, form=form,
-                         links=links.items, next_url=next_url, prev_url=prev_url, get_form=get_form)
+                         links=links.items, next_url=next_url, prev_url=prev_url, get_form=get_form, all_forms=all_forms)
 
 @bp.route('/group/<int:group_id>/export')
 @login_required
