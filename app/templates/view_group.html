@@ -257,10 +257,10 @@
             <h2 class="section-title" style="margin: 0;">Submissions</h2>
             {% if all_forms %}
                 <div style="display: flex; gap: 10px;">
-                    <a href="{{ url_for('main.export_group', group_id=group.id) }}" class="export-btn">
+                    <a href="{{ url_for('main.export_group', group_id=group.id) }}" class="export-btn" download>
                         Export Excel
                     </a>
-                    <a href="{{ url_for('main.export_group_photos', group_id=group.id) }}" class="export-btn">
+                    <a href="{{ url_for('main.export_group_photos', group_id=group.id) }}" class="export-btn" download>
                         Export Photos
                     </a>
                 </div>

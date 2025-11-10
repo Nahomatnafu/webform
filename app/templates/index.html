@@ -222,9 +222,10 @@
             <tbody>
                 {% for link in filled_links %}
                 {% set form_data = get_form(link.id) %}
+                {% if form_data %}
                 <tr class="table-row-hover">
-                    <td>{{ form_data.first_name if form_data else '-' }}</td>
-                    <td>{{ form_data.last_name if form_data else '-' }}</td>
+                    <td>{{ form_data.first_name }}</td>
+                    <td>{{ form_data.last_name }}</td>
                     <td>
                         <a href="{{ url_for('main.form', link_id=link.id, _external=True) }}" class="table-link">
                             ink.sh/{{ link.id[:6] }}
@@ -237,6 +238,7 @@
                         </div>
                     </td>
                 </tr>
+                {% endif %}
                 {% endfor %}
             </tbody>
         </table>

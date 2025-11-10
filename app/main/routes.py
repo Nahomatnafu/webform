@@ -48,9 +48,14 @@ def index():
     def get_form(link_id):
         # Get the first form for this link (for legacy links)
         query = sa.select(Form).where(Form.link_id == link_id).limit(1)
-        return db.session.scalars(query).first()
+        form_result = db.session.scalars(query).first()
+        return form_result
 
-    return render_template('index.html', title='Home', links=links.items, form=form, next_url=next_url, prev_url=prev_url, get_form=get_form)
+    # Get groups for the dashboard
+    groups_query = sa.select(Group).where(Group.user_id == current_user.id).order_by(Group.created_at.desc())
+    groups = db.session.scalars(groups_query).all()
+
+    return render_template('index.html', title='Home', links=links.items, form=form, next_url=next_url, prev_url=prev_url, get_form=get_form, groups=groups)
 
 
 @bp.route('/user')
@@ -276,7 +281,7 @@ def export_group(group_id):
 def export_group_photos(group_id):
     """Export all group submission photos as a ZIP file"""
     import zipfile
-    import io
+    from io import BytesIO
 
     group = db.first_or_404(
         sa.select(Group).where(Group.id == group_id).where(Group.user_id == current_user.id)
@@ -291,7 +296,9 @@ def export_group_photos(group_id):
         return redirect(url_for('main.view_group', group_id=group_id))
 
     # Create ZIP file in memory
-    zip_buffer = io.BytesIO()
+    zip_buffer = BytesIO()
+    files_added = 0
+
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
         for form in forms:
             # Get image filename
@@ -299,40 +306,52 @@ def export_group_photos(group_id):
 
             if os.path.exists(image_path):
                 # Create filename as FirstName_LastName_id
-                filename = f"{form.first_name}_{form.last_name}_{form.id}"
+                filename = f"{form.first_name}_{form.last_name}_{form.id[:8]}"
 
                 # Get file extension
                 kind = filetype.guess(image_path)
                 if kind:
                     filename += f".{kind.extension}"
+                else:
+                    filename += ".png"  # Default to PNG if type can't be determined
 
                 # Add file to ZIP
                 with open(image_path, 'rb') as f:
                     zip_file.writestr(filename, f.read())
+                    files_added += 1
+
+    if files_added == 0:
+        flash('No photos found to export for this group.', 'warning')
+        return redirect(url_for('main.view_group', group_id=group_id))
 
     zip_buffer.seek(0)
 
     # Generate filename
-    filename = f"{group.name.replace(' ', '_')}_photos.zip"
+    download_filename = f"{group.name.replace(' ', '_')}_photos.zip"
 
     return send_file(
         zip_buffer,
         mimetype='application/zip',
         as_attachment=True,
-        download_name=filename
+        download_name=download_filename
     )
 
 @bp.route('/link/<link_id>/delete', methods=['POST'])
 @login_required
 def delete_link(link_id):
     """Delete a dashboard link and its associated form"""
-    link = db.first_or_404(
+    # Check if link exists
+    link = db.session.scalars(
         sa.select(Link).where(Link.id == link_id).where(Link.user_id == current_user.id)
-    )
+    ).first()
 
-    # Delete associated form if it exists
-    form = db.session.scalars(sa.select(Form).where(Form.link_id == link_id)).first()
-    if form:
+    if not link:
+        flash('Link not found or already deleted.', 'warning')
+        return redirect(url_for('main.index'))
+
+    # Delete associated forms (there might be multiple)
+    forms = db.session.scalars(sa.select(Form).where(Form.link_id == link_id)).all()
+    for form in forms:
         # Delete the image file
         image_path = os.path.join(current_app.config['UPLOAD_PATH'], form.id)
         if os.path.exists(image_path):
