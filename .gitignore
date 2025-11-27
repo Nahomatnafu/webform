@@ -6,6 +6,12 @@ venv
 uploads
 app.db
 webform.log*
+cleanup_database.py
+debug_links.py
+generate_fake_data.py
+generate_group_submissions.py
+test_export_photos.py
+test_export.zip
 
 # Sensitive scripts with credentials
 add_users.py
