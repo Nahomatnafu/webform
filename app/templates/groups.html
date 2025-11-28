@@ -101,49 +101,51 @@
         <h2 class="section-title">Your Groups</h2>
 
         {% if groups %}
-        <table class="dashboard-table">
-            <thead>
-                <tr>
-                    <th>Group Name</th>
-                    <th>Capacity</th>
-                    <th>Submissions</th>
-                    <th>Expiration</th>
-                    <th>Created</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for group in groups %}
-                <tr>
-                    <td>
-                        <strong>{{ group.name }}</strong>
-                        {% if group.description %}
-                            <br><small style="color: #999;">{{ group.description[:50] }}{% if group.description|length > 50 %}...{% endif %}</small>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if group.max_capacity == 0 %}
-                            Unlimited
-                        {% else %}
-                            {{ group.current_count }}/{{ group.max_capacity }}
-                        {% endif %}
-                    </td>
-                    <td>{{ group.current_count }}</td>
-                    <td>
-                        {% if group.expiration_type == 'never' %}
-                            Never
-                        {% else %}
-                            {{ group.expiration_hours }} hours
-                        {% endif %}
-                    </td>
-                    <td>{{ moment(group.created_at).format('MMM DD, YYYY') }}</td>
-                    <td>
-                        <a href="{{ url_for('main.view_group', group_id=group.id) }}" class="btn-view-form">Manage</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Group Name</th>
+                        <th>Capacity</th>
+                        <th>Submissions</th>
+                        <th>Expiration</th>
+                        <th>Created</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for group in groups %}
+                    <tr>
+                        <td>
+                            <strong>{{ group.name }}</strong>
+                            {% if group.description %}
+                                <br><small style="color: #999;">{{ group.description[:50] }}{% if group.description|length > 50 %}...{% endif %}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if group.max_capacity == 0 %}
+                                Unlimited
+                            {% else %}
+                                {{ group.current_count }}/{{ group.max_capacity }}
+                            {% endif %}
+                        </td>
+                        <td>{{ group.current_count }}</td>
+                        <td>
+                            {% if group.expiration_type == 'never' %}
+                                Never
+                            {% else %}
+                                {{ group.expiration_hours }} hours
+                            {% endif %}
+                        </td>
+                        <td>{{ moment(group.created_at).format('MMM DD, YYYY') }}</td>
+                        <td>
+                            <a href="{{ url_for('main.view_group', group_id=group.id) }}" class="btn-view-form">Manage</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
         <!-- Pagination -->
         {% if prev_url or next_url %}

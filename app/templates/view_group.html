@@ -135,6 +135,38 @@
     .modal-btn-cancel:hover {
         background-color: #dee2e6;
     }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .export-buttons-container {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+
+        .export-buttons-container > div {
+            width: 100%;
+        }
+
+        .export-btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .modal-box {
+            padding: 20px;
+            max-width: 90%;
+        }
+
+        .modal-box h3 {
+            font-size: 16px;
+        }
+
+        .modal-box p {
+            font-size: 13px;
+        }
+    }
 </style>
 <div class="dashboard-container">
     <!-- Group Header -->
@@ -194,41 +226,43 @@
         <h2 class="section-title">Links Generated</h2>
 
         {% if links %}
-        <table class="dashboard-table">
-            <thead>
-                <tr>
-                    <th>Link</th>
-                    <th>Created At</th>
-                    <th>Expires At</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for link in links %}
-                <tr class="table-row-hover">
-                    <td>
-                        <a href="{{ url_for('main.form', link_id=link.id, _external=True) }}" class="table-link" data-url="{{ url_for('main.form', link_id=link.id, _external=True) }}" onclick="copyToClipboard(event, this)">
-                            ink.sh/{{ link.id[:6] }}
-                        </a>
-                    </td>
-                    <td>{{ moment(link.created_at).format('MMM DD, YYYY h:mm A') }}</td>
-                    <td>{{ moment(link.end_at).format('MMM DD, YYYY h:mm A') }}</td>
-                    <td>
-                        <div class="status-cell">
-                            {% if link.used %}
-                                <span class="status-badge status-filled">Filled</span>
-                            {% elif link.is_active() %}
-                                <span class="status-badge status-active">Active</span>
-                            {% else %}
-                                <span class="status-badge status-expired">Expired</span>
-                            {% endif %}
-                            <button type="button" class="delete-btn" onclick="showDeleteModal('{{ url_for('main.delete_group_link', group_id=group.id, link_id=link.id) }}', 'link')">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Link</th>
+                        <th>Created At</th>
+                        <th>Expires At</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for link in links %}
+                    <tr class="table-row-hover">
+                        <td>
+                            <a href="{{ url_for('main.form', link_id=link.id, _external=True) }}" class="table-link" data-url="{{ url_for('main.form', link_id=link.id, _external=True) }}" onclick="copyToClipboard(event, this)">
+                                ink.sh/{{ link.id[:6] }}
+                            </a>
+                        </td>
+                        <td>{{ moment(link.created_at).format('MMM DD, YYYY h:mm A') }}</td>
+                        <td>{{ moment(link.end_at).format('MMM DD, YYYY h:mm A') }}</td>
+                        <td>
+                            <div class="status-cell">
+                                {% if link.used %}
+                                    <span class="status-badge status-filled">Filled</span>
+                                {% elif link.is_active() %}
+                                    <span class="status-badge status-active">Active</span>
+                                {% else %}
+                                    <span class="status-badge status-expired">Expired</span>
+                                {% endif %}
+                                <button type="button" class="delete-btn" onclick="showDeleteModal('{{ url_for('main.delete_group_link', group_id=group.id, link_id=link.id) }}', 'link')">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
         <!-- Pagination -->
         {% if prev_url or next_url %}
@@ -253,10 +287,10 @@
 
     <!-- Submissions Section -->
     <div class="dashboard-section">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px;">
+        <div class="export-buttons-container" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 15px; flex-wrap: wrap;">
             <h2 class="section-title" style="margin: 0;">Submissions</h2>
             {% if all_forms %}
-                <div style="display: flex; gap: 10px;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <a href="{{ url_for('main.export_group', group_id=group.id) }}" class="export-btn" download>
                         Export Excel
                     </a>
@@ -268,31 +302,33 @@
         </div>
 
         {% if all_forms %}
-        <table class="dashboard-table">
-            <thead>
-                <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Submitted</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for form_data in all_forms %}
-                <tr class="table-row-hover">
-                    <td>{{ form_data.first_name }}</td>
-                    <td>{{ form_data.last_name }}</td>
-                    <td>{{ moment(form_data.submitted_at).format('MMM DD, YYYY h:mm A') }}</td>
-                    <td>
-                        <div class="status-cell">
-                            <a href="{{ url_for('main.view_form', form_id=form_data.id) }}" class="btn-view-form">View Form</a>
-                            <button type="button" class="delete-btn" onclick="showDeleteModal('{{ url_for('main.delete_form', form_id=form_data.id) }}', 'submission')">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Submitted</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for form_data in all_forms %}
+                    <tr class="table-row-hover">
+                        <td>{{ form_data.first_name }}</td>
+                        <td>{{ form_data.last_name }}</td>
+                        <td>{{ moment(form_data.submitted_at).format('MMM DD, YYYY h:mm A') }}</td>
+                        <td>
+                            <div class="status-cell">
+                                <a href="{{ url_for('main.view_form', form_id=form_data.id) }}" class="btn-view-form">View Form</a>
+                                <button type="button" class="delete-btn" onclick="showDeleteModal('{{ url_for('main.delete_form', form_id=form_data.id) }}', 'submission')">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
         <p style="text-align: center; color: #999; padding: 40px 0;">No submissions yet.</p>
         {% endif %}

@@ -120,6 +120,22 @@
     .modal-btn-cancel:hover {
         background-color: #dee2e6;
     }
+
+    /* Responsive Styles */
+    @media (max-width: 480px) {
+        .modal-box {
+            padding: 20px;
+            max-width: 90%;
+        }
+
+        .modal-box h3 {
+            font-size: 16px;
+        }
+
+        .modal-box p {
+            font-size: 13px;
+        }
+    }
 </style>
 <div class="dashboard-container">
     <!-- Set Link Expiration Time Section -->
@@ -147,41 +163,43 @@
         <h2 class="section-title">Links Generated</h2>
 
         {% if links %}
-        <table class="dashboard-table">
-            <thead>
-                <tr>
-                    <th>Link</th>
-                    <th>Created At</th>
-                    <th>End At</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for link in links %}
-                <tr class="table-row-hover">
-                    <td>
-                        <a href="{{ url_for('main.form', link_id=link.id, _external=True) }}" class="table-link" data-url="{{ url_for('main.form', link_id=link.id, _external=True) }}" onclick="copyToClipboard(event, this)">
-                            ink.sh/{{ link.id[:6] }}
-                        </a>
-                    </td>
-                    <td>{{ moment(link.created_at).format('MMM DD, YYYY h:mm A') }}</td>
-                    <td>{{ moment(link.end_at).format('MMM DD, YYYY h:mm A') }}</td>
-                    <td>
-                        <div class="status-cell">
-                            {% if link.used %}
-                                <span class="status-badge status-filled">Filled</span>
-                            {% elif link.is_active() %}
-                                <span class="status-badge status-active">Active</span>
-                            {% else %}
-                                <span class="status-badge status-expired">Expired</span>
-                            {% endif %}
-                            <button type="button" class="delete-btn" onclick="showDeleteModal('{{ url_for('main.delete_link', link_id=link.id) }}', 'link')">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>Link</th>
+                        <th>Created At</th>
+                        <th>End At</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for link in links %}
+                    <tr class="table-row-hover">
+                        <td>
+                            <a href="{{ url_for('main.form', link_id=link.id, _external=True) }}" class="table-link" data-url="{{ url_for('main.form', link_id=link.id, _external=True) }}" onclick="copyToClipboard(event, this)">
+                                ink.sh/{{ link.id[:6] }}
+                            </a>
+                        </td>
+                        <td>{{ moment(link.created_at).format('MMM DD, YYYY h:mm A') }}</td>
+                        <td>{{ moment(link.end_at).format('MMM DD, YYYY h:mm A') }}</td>
+                        <td>
+                            <div class="status-cell">
+                                {% if link.used %}
+                                    <span class="status-badge status-filled">Filled</span>
+                                {% elif link.is_active() %}
+                                    <span class="status-badge status-active">Active</span>
+                                {% else %}
+                                    <span class="status-badge status-expired">Expired</span>
+                                {% endif %}
+                                <button type="button" class="delete-btn" onclick="showDeleteModal('{{ url_for('main.delete_link', link_id=link.id) }}', 'link')">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
         <!-- Pagination -->
         {% if prev_url or next_url %}
@@ -210,38 +228,40 @@
 
         {% set filled_links = links|selectattr('used')|list %}
         {% if filled_links %}
-        <table class="dashboard-table">
-            <thead>
-                <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Link</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for link in filled_links %}
-                {% set form_data = get_form(link.id) %}
-                {% if form_data %}
-                <tr class="table-row-hover">
-                    <td>{{ form_data.first_name }}</td>
-                    <td>{{ form_data.last_name }}</td>
-                    <td>
-                        <a href="{{ url_for('main.form', link_id=link.id, _external=True) }}" class="table-link">
-                            ink.sh/{{ link.id[:6] }}
-                        </a>
-                    </td>
-                    <td>
-                        <div class="status-cell">
-                            <a href="{{ url_for('main.view_form', form_id=form_data.id) }}" class="btn-view-form">View Form</a>
-                            <button type="button" class="delete-btn" onclick="showDeleteModal('{{ url_for('main.delete_link', link_id=link.id) }}', 'user')">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-                {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table class="dashboard-table">
+                <thead>
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Link</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for link in filled_links %}
+                    {% set form_data = get_form(link.id) %}
+                    {% if form_data %}
+                    <tr class="table-row-hover">
+                        <td>{{ form_data.first_name }}</td>
+                        <td>{{ form_data.last_name }}</td>
+                        <td>
+                            <a href="{{ url_for('main.form', link_id=link.id, _external=True) }}" class="table-link">
+                                ink.sh/{{ link.id[:6] }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="status-cell">
+                                <a href="{{ url_for('main.view_form', form_id=form_data.id) }}" class="btn-view-form">View Form</a>
+                                <button type="button" class="delete-btn" onclick="showDeleteModal('{{ url_for('main.delete_link', link_id=link.id) }}', 'user')">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
         <p style="text-align: center; color: #999; padding: 40px 0;">No users added yet.</p>
         {% endif %}
