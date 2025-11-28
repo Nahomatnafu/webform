@@ -24,7 +24,6 @@
     }
 
     .delete-btn {
-        display: none;
         padding: 4px 12px;
         background-color: #dc3545;
         color: white;
@@ -32,9 +31,11 @@
         text-decoration: none;
         font-size: 12px;
         font-weight: 500;
-        transition: background-color 0.3s ease;
+        transition: all 0.3s ease;
         cursor: pointer;
         border: none;
+        opacity: 0;
+        pointer-events: none;
     }
 
     .delete-btn:hover {
@@ -42,7 +43,16 @@
     }
 
     .table-row-hover:hover .delete-btn {
-        display: inline-block;
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* Always show delete button on mobile */
+    @media (max-width: 768px) {
+        .delete-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
     }
 
     .status-cell {
@@ -291,10 +301,10 @@
             <h2 class="section-title" style="margin: 0;">Submissions</h2>
             {% if all_forms %}
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <a href="{{ url_for('main.export_group', group_id=group.id) }}" class="export-btn" download>
+                    <a href="{{ url_for('main.export_group', group_id=group.id) }}" class="export-btn">
                         Export Excel
                     </a>
-                    <a href="{{ url_for('main.export_group_photos', group_id=group.id) }}" class="export-btn" download>
+                    <a href="{{ url_for('main.export_group_photos', group_id=group.id) }}" class="export-btn">
                         Export Photos
                     </a>
                 </div>
