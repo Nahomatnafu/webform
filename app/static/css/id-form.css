@@ -243,6 +243,11 @@
 
     .id-form-card {
         padding: 30px 35px;
+        width: 100%;
+    }
+
+    .id-form-wrapper {
+        padding: 30px 20px;
     }
 }
 
@@ -251,8 +256,22 @@
         padding: 20px 15px;
     }
 
+    .id-form-header {
+        margin-bottom: 20px;
+    }
+
+    .form-card-title {
+        font-size: 24px;
+    }
+
+    .form-card-subtitle {
+        font-size: 14px;
+    }
+
     .id-form-card {
         padding: 25px 20px;
+        width: 100%;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     }
 
     .id-form-row {
@@ -260,9 +279,155 @@
         gap: 15px;
     }
 
+    .id-form-section {
+        margin-bottom: 18px;
+    }
+
+    .id-form-field {
+        margin-bottom: 15px;
+    }
+
+    .id-form-label {
+        font-size: 13px;
+    }
+
+    .id-form-input,
+    .id-form-select {
+        font-size: 14px;
+        padding: 12px 14px;
+    }
+
+    .file-upload-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .file-upload-label {
+        width: 100%;
+        text-align: center;
+        padding: 12px 20px;
+    }
+
+    .file-name {
+        font-size: 13px;
+        word-break: break-word;
+    }
+
+    #image-preview-container {
+        text-align: center;
+    }
+
+    #image-preview {
+        max-width: 100% !important;
+        max-height: 250px !important;
+    }
+
     .id-form-submit-btn {
         width: 100%;
         min-width: auto;
+        font-size: 15px;
+        padding: 14px 30px;
+    }
+
+    .id-form-submit {
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .id-form-wrapper {
+        padding: 15px 10px;
+    }
+
+    .id-form-header {
+        margin-bottom: 15px;
+    }
+
+    .form-card-title {
+        font-size: 20px;
+    }
+
+    .form-card-subtitle {
+        font-size: 13px;
+    }
+
+    .id-form-card {
+        padding: 20px 15px;
+        border-radius: 8px;
+    }
+
+    .id-form-section {
+        margin-bottom: 15px;
+    }
+
+    .id-form-field {
+        margin-bottom: 12px;
+    }
+
+    .id-form-label {
+        font-size: 12px;
+        margin-bottom: 6px;
+    }
+
+    .id-form-input,
+    .id-form-select {
+        font-size: 13px;
+        padding: 10px 12px;
+    }
+
+    .id-form-row {
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+
+    .file-upload-label {
+        font-size: 13px;
+        padding: 10px 16px;
+    }
+
+    .file-name {
+        font-size: 12px;
+    }
+
+    #image-preview {
+        max-width: 100% !important;
+        max-height: 200px !important;
+    }
+
+    .form-helper-text {
+        font-size: 11px;
+    }
+
+    .form-error {
+        font-size: 11px;
+    }
+
+    .id-form-submit-btn {
+        font-size: 14px;
+        padding: 12px 24px;
+    }
+
+    .id-form-submit {
+        margin-top: 15px;
+    }
+
+    /* Make checkboxes more touch-friendly */
+    input[type="checkbox"] {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    /* Adjust height input fields on mobile */
+    #height-feet,
+    #height-inches {
+        font-size: 13px !important;
+        padding: 10px 8px !important;
+    }
+
+    /* Stack organ donor and restrictions vertically on very small screens */
+    .id-form-row[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
     }
 }
 
